@@ -3,43 +3,60 @@
     @Date: 03-10-2024
     @Last Modified by: Dhananjay Kumar
     @Last Modified time: 03-10-2024
-    @Title: Utility Class for Temperature Conversion
+    @Title: Utility Class for Loan Monthly Payment Calculation
 """
+
+import sys
 
 class Util:
     @staticmethod
-    def temperatureConversion(value, scale):
+    def monthlyPayment(P, Y, R):
         """
         Description:
-            Converts temperature from Fahrenheit to Celsius or vice versa.
+            Calculates the monthly payment required to pay off a loan based on the principal,
+            annual interest rate, and loan duration in years.
         
         Parameters:
-            value (float): The temperature value to be converted.
-            scale (str): Target scale for conversion, either "C" or "F".
+            P (float): The principal loan amount.
+            Y (int): The loan term in years.
+            R (float): The annual interest rate in percentage.
         
-        Return:
-            float: Converted temperature value.
+        Returns:
+            float: The monthly payment amount.
         """
-        if scale.upper() == 'C':
-            # Convert Fahrenheit to Celsius
-            return round((value - 32) * 5 / 9, 2)
-        elif scale.upper() == 'F':
-            # Convert Celsius to Fahrenheit
-            return round((value * 9 / 5) + 32, 2)
+        # Convert annual interest rate to monthly interest rate (decimal form)
+        r = (R / 100) / 12
+        # Number of months
+        n = Y * 12
+        
+        # Calculate the monthly payment using the formula
+        if r != 0:
+            M = (P * r * (1 + r)**n) / ((1 + r)**n - 1)
         else:
-            raise ValueError("Invalid scale. Use 'C' for Celsius or 'F' for Fahrenheit.")
+            M = P / n  # If no interest, just divide the principal by the number of months
+        
+        return round(M, 2)
 
 def main():
     """
     Description:
-        Main function to demonstrate temperature conversion.
+        Main function that reads command-line arguments and calculates the monthly loan payment.
     """
     try:
-        temp = float(input("Enter the temperature value: "))
-        target_scale = input("Enter the target scale (C for Celsius, F for Fahrenheit): ")
+        # Ensure correct number of arguments
+        if len(sys.argv) != 4:
+            raise ValueError("Please provide exactly 3 arguments: Principal, Years, and Rate")
+
+        # Read command-line arguments
+        P = float(sys.argv[1])  # Principal loan amount
+        Y = int(sys.argv[2])     # Loan duration in years
+        R = float(sys.argv[3])   # Annual interest rate in percentage
         
-        converted_temp = Util.temperatureConversion(temp, target_scale)
-        print(f"Converted temperature: {converted_temp}°{target_scale.upper()}")
+        # Calculate the monthly payment
+        monthly_payment = Util.monthlyPayment(P, Y, R)
+        
+        # Output the result
+        print(f"The monthly payment for the loan is: ${monthly_payment}")
     
     except ValueError as e:
         print(f"Error: {e}")
